@@ -18,7 +18,7 @@ public class Cannon : MonoBehaviour
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
 
         // Ajustar la velocidad del proyectil considerando la velocidad del auto
-        Vector3 totalVelocity = carRigidbody.velocity + firePoint.forward * projectileSpeed* Time.deltaTime;
+        Vector3 totalVelocity = carRigidbody.velocity + firePoint.forward * projectileSpeed * Time.deltaTime;
         rb.velocity = totalVelocity;
     }
 }

@@ -1,22 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    public Transform jugador; // Referencia al transform del jugador
-    public float velocidad = 5f; // Velocidad a la que el objeto seguirá al jugador
+    public float maxSpeed = 10f; // Velocidad máxima a alcanzar
+    public float accelerationDuration = 5f; // Tiempo para alcanzar la velocidad máxima
 
-    void Update()
+    private NavMeshAgent navMeshAgent;
+    private float originalSpeed;
+
+    void Start()
     {
-        if (jugador != null) // Verificar que haya un jugador asignado
+        navMeshAgent = GetComponent<NavMeshAgent>();
+        if (navMeshAgent != null)
         {
-            // Obtener la dirección hacia la cual moverse
-            Vector3 direccion = jugador.position - transform.position;
-            direccion.Normalize(); // Normalizar para mantener la misma velocidad en todas las direcciones
-
-            // Mover el objeto en la dirección del jugador
-            transform.position += direccion * velocidad * Time.deltaTime;
+            originalSpeed = navMeshAgent.speed;
+            StartCoroutine(IncreaseSpeed());
         }
+        else
+        {
+            Debug.LogError("NavMeshAgent not found on the enemy!");
+        }
+    }
+
+    private IEnumerator IncreaseSpeed()
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < accelerationDuration)
+        {
+            navMeshAgent.speed = Mathf.Lerp(originalSpeed, maxSpeed, elapsedTime / accelerationDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        navMeshAgent.speed = maxSpeed; // Asegurarse de que la velocidad final es la máxima
+        Debug.Log($"Velocidad máxima alcanzada: {navMeshAgent.speed}");
     }
 }
